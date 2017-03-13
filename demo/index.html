@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Player demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Player</h1>
+    <video id="video" src="video.mp4" poster="video.png" controls width="480" height="320"></video>
+    <!--<script src="demo.js"></script>-->
+
+    <script src="../dist/js/player.js"></script>
+    <script>
+        var player = Player('video', {
+            source: 'video.mp4',
+            poster: 'video.png'
+        });
+        player.on('play', function(){
+            console.log('play start...')
+        })
+        console.log(player);
+        console.log(document.body)
+    </script>
+</body>
+</html>

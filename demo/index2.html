@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>palyer demo</title>
+    <link rel="stylesheet" href="player.css">
+</head>
+<body>
+    <!--<div class="video-wrap">-->
+        <video id="video" src="video.mp4" poster="video.png"></video>
+        <!--<div class="play-control">
+            <div class="play-btn control-btn">
+                <i class="icon icon-play"></i>
+            </div>
+            <div class="time-count"><span class="currenttime"></span> / <span class="duration"></span></div>
+            <div class="control-space"></div>
+            <div class="voice-control">
+                <div class="mute-btn control-btn">
+                    <i class="icon icon-voice"></i>
+                </div>
+                <div class="voice-progress">
+                    <div class="voice-progress-bar">
+                        <div class="voice-progress-ved"></div>
+                    </div>
+                    <label class="voice-progress-point"></label>
+                </div>
+            </div>
+            <div class="play-speed">
+                <span class="speed-default">1.0x</span>
+                <div class="speed-list-wrap">
+                    <ul class="speed-list">
+                        <li class="speed-item">2.0x</li>
+                        <li class="speed-item">1.75x</li>
+                        <li class="speed-item">1.5x</li>
+                        <li class="speed-item">1.25x</li>
+                        <li class="speed-item">1.0x</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="zoomin-btn control-btn">
+                <i class="icon icon-zoomin"></i>
+            </div>
+            <div class="play-progress">
+                <div class="progress-bar">
+                    <div class="progress-seek"></div>
+                    <div class="progress-buffer"></div>
+                    <div class="progress-played"></div>
+                </div>
+                <label class="progress-point"></label>
+                <label class="progress-tips">06:04</label>
+            </div>
+            
+        </div>-->
+    <!--</div>-->
+    <script src="../dist/js/player.js"></script>
+    <script>
+        
+        var player = Player('video');
+        console.log(player);
+        player.on('play', function(){
+            console.log('play')
+        });
+
+
+    </script>
+    <!--<script>
+
+        function setTransform(el, val) {
+            var css = 'translate3d('+ val.x +'px, '+ val.y +'px, 0)',
+                style = el.style;
+            style.transform = css;
+        }
+
+        var progress = document.querySelector('.play-progress');
+        var tips = document.querySelector('.progress-tips');
+        var point = document.querySelector('.progress-point');
+        var played = document.querySelector('.progress-played');
+        var pleft = progress.getBoundingClientRect().left;
+        var pbuffer = document.querySelector('.progress-buffer');
+        var pwidth = progress.offsetWidth;
+        
+        var mousedown = false;
+        progress.addEventListener('mousedown', function(ev){
+            if (ev.button == 0) {
+                mousedown = true;
+            }
+        });
+        progress.addEventListener('mouseup', function(ev){
+            if (ev.button == 0) {
+                mousedown = false;
+            }
+        });
+        progress.addEventListener('mousemove', function(ev){
+            pleft = progress.getBoundingClientRect().left;
+            pwidth = progress.offsetWidth;
+            var left = (ev.clientX-pleft)/pwidth*100;
+            tips.style.left = left + '%'; 
+            if (mousedown && left <= 100 && left >= 0) {
+                point.style.left = left + '%';
+                played.style.left = left + '%';  
+            }        
+        });
+
+        document.addEventListener('mouseup', function(ev){
+            if (ev.button == 0) {
+                mousedown = false;
+            }
+        });
+
+        var currenttime = document.querySelector('.currenttime');
+        var duration = document.querySelector('.duration');
+
+        var video = document.querySelector('#video');
+
+        video.addEventListener('loadeddata', function(){
+            currenttime.textContent = Math.floor(this.currentTime/60) + ':' + Math.floor(this.currentTime%60);
+            duration.textContent = Math.floor(this.duration/60) + ':' + Math.floor(this.duration%60);
+        });
+
+        video.addEventListener('timeupdate', function(){
+            var buffered = this.buffered.end(0);
+            pbuffer.style.left = buffered/this.duration*100 + '%';
+            point.style.left = this.currentTime/this.duration*100 + '%';
+            played.style.left = this.currentTime/this.duration*100 + '%'; 
+            currenttime.textContent = Math.floor(this.currentTime/60) + ':' + Math.floor(this.currentTime%60);
+
+        });
+        progress.addEventListener('click', function(ev){
+            pleft = progress.getBoundingClientRect().left;
+            pwidth = progress.offsetWidth;
+            var left = (ev.clientX-pleft)/pwidth*100;
+            point.style.left = left + '%';  
+            played.style.left = left + '%'; 
+
+            console.log(left/100 * video.duration);
+            video.currentTime = left/100 * video.duration;         
+        });
+
+        var playBtn = document.querySelector('.play-btn .icon');
+        playBtn.addEventListener('click', function(){
+            console.log('play')
+            if (this.classList.contains('icon-pause')) {
+                this.classList.remove('icon-pause');
+                video.pause();
+            } else {
+                this.classList.add('icon-pause');
+                video.play();
+            }
+        });
+
+        var voiceProgress = document.querySelector('.voice-progress');
+        var voiced = document.querySelector('.voice-progress-ved');
+        var voicePoint = document.querySelector('.voice-progress-point');
+        var vleft = voiceProgress.getBoundingClientRect().left;
+        var vwidth = voiceProgress.offsetWidth;
+        voiceProgress.addEventListener('click', function(ev){
+            var left = (ev.clientX-vleft)/vwidth*100;
+            voicePoint.style.left = left + '%';  
+            voiced.style.left = left + '%';          
+        });
+
+        var muteBtn = document.querySelector('.mute-btn .icon');
+        muteBtn.addEventListener('click', function(){
+            if (this.classList.contains('icon-mute')) {
+                this.classList.remove('icon-mute');
+                video.muted = false;
+            } else {
+                this.classList.add('icon-mute');
+                video.muted = true;
+            }
+        });
+
+        var wrap = document.querySelector('.video-wrap');
+        var zoomin = document.querySelector('.zoomin-btn .icon');
+        zoomin.addEventListener('click',function(){
+            if (this.classList.contains('icon-zoomout')) {
+                this.classList.remove('icon-zoomout');
+                exitFullscreen(wrap)
+            } else {
+                this.classList.add('icon-zoomout');                
+                launchFullScreen(wrap)
+            }
+        });
+
+        function launchFullScreen(element) {  
+            if(element.requestFullScreen) {  
+                element.requestFullScreen();  
+            } else if(element.mozRequestFullScreen) {  
+                element.mozRequestFullScreen();  
+            } else if(element.webkitRequestFullScreen) {  
+                element.webkitRequestFullScreen();  
+            }  
+        }  
+
+        function exitFullscreen(element) {
+            if(document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if(document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if(document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+
+        document.addEventListener('webkitfullscreenchange', function(ev){
+            if (document.webkitFullscreenElement) {
+                wrap.classList.add('fullscreen');
+            } else {
+                wrap.classList.remove('fullscreen');
+            }
+        });
+
+    </script>-->
+</body>
+</html>

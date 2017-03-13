@@ -1,0 +1,26 @@
+{
+  "name": "player",
+  "version": "1.0.0",
+  "description": "Web video 视频播放器",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lofreer/player.git"
+  },
+  "author": "lofreer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lofreer/player/issues"
+  },
+  "homepage": "https://github.com/lofreer/player#readme",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.22.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-connect": "^5.0.0",
+    "gulp-uglify": "^2.0.1"
+  }
+}
