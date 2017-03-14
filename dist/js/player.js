@@ -136,6 +136,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return new Vm(tagName, props, children).render();
     };
 
+    var mousedown = false;
     var defaults = {
         source: '',
         poster: '',
@@ -144,6 +145,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         width: '',
         autoplay: true
     };
+    var loading = ce('div', { class: 'play-loading' }, [0, 0, 0, 0, 0, 0, 0, 0].map(function (item) {
+        return ce('span');
+    }));
 
     function launchFullScreen(element) {
         if (element.requestFullScreen) {
@@ -179,9 +183,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.media = element;
             this.media.removeAttribute('controls');
 
-            this.wrap = ce('div', { class: 'play-wrap' });
+            this.wrap = ce('div', { class: 'play-wrap', style: 'width: ' + defaults.width + 'px; height: ' + defaults.height + 'px;' });
             this.media.parentNode.appendChild(this.wrap);
             this.wrap.appendChild(this.media);
+            this.loading = loading;
+            // this.wrap.appendChild(this.loading = loading);
 
             this.buildControl();
             this.initEvents();
@@ -228,10 +234,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         }
                     })]), ce('div', { class: 'voice-progress',
                         onMousedown: function onMousedown(ev) {
-                            if (ev.button == 0) this.mousedown = true;
+                            if (ev.button == 0) mousedown = true;
                         },
                         onMouseup: function onMouseup(ev) {
-                            if (ev.button == 0) this.mousedown = false;
+                            if (ev.button == 0) mousedown = false;
                         },
                         onClick: function onClick(ev) {
                             var vwidth = this.offsetWidth;
@@ -249,7 +255,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             var vwidth = this.offsetWidth;
                             var left = (ev.clientX - vleft) / vwidth * 100;
 
-                            if (this.mousedown && left <= 100 && left >= 0) {
+                            if (mousedown && left <= 100 && left >= 0) {
                                 self.btns.voicePoint.style.left = left + '%';
                                 self.btns.voiceVed.style.left = left + '%';
                                 self.volume(left / 100);
@@ -257,7 +263,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             }
                         },
                         onMouseleave: function onMouseleave(ev) {
-                            if (ev.button == 0) this.mousedown = false;
+                            if (ev.button == 0) mousedown = false;
                         }
                     }, [ce('div', { class: 'voice-progress-bar' }, [self.btns.voiceVed = ce('div', { class: 'voice-progress-ved' })]), self.btns.voicePoint = ce('label', { class: 'voice-progress-point' })])]),
                     // 速度控制
@@ -284,10 +290,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     // 进度条
                     progress: ce('div', { class: 'play-progress',
                         onMousedown: function onMousedown(ev) {
-                            if (ev.button == 0) this.mousedown = true;
+                            if (ev.button == 0) mousedown = true;
                         },
                         onMouseup: function onMouseup(ev) {
-                            if (ev.button == 0) this.mousedown = false;
+                            if (ev.button == 0) mousedown = false;
                         },
                         onClick: function onClick(ev) {
                             var pleft = this.getBoundingClientRect().left;
@@ -295,7 +301,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                             var left = (ev.clientX - pleft) / pwidth * 100;
                             self.btns.progressPoint.style.left = left + '%';
                             self.btns.progressPlayed.style.left = left + '%';
-
                             self.seek.call(self, left / 100 * self.media.duration);
                         },
                         onMousemove: function onMousemove(ev) {
@@ -306,13 +311,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                             var currentTime = left / 100 * self.media.duration;
                             self.btns.progressTips.textContent = Math.floor(currentTime / 60) + ':' + Math.floor(currentTime % 60);
-                            if (this.mousedown && left <= 100 && left >= 0) {
+                            if (mousedown && left <= 100 && left >= 0) {
                                 self.btns.progressPoint.style.left = left + '%';
                                 self.btns.progressPlayed.style.left = left + '%';
+                                self.seek.call(self, left / 100 * self.media.duration);
                             }
                         },
                         onMouseleave: function onMouseleave(ev) {
-                            if (ev.button == 0) this.mousedown = false;
+                            if (ev.button == 0) mousedown = false;
                         }
                     }, [ce('div', { class: 'progress-bar' }, [self.btns.progressBuffer = ce('div', { class: 'progress-buffer' }), self.btns.progressPlayed = ce('div', { class: 'progress-played' })]), self.btns.progressPoint = ce('label', { class: 'progress-point' }), self.btns.progressTips = ce('label', { class: 'progress-tips' })])
                 };
@@ -473,18 +479,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function initEvents() {
                 var self = this;
 
-                this.media.addEventListener('canplay', function () {
+                this.media.addEventListener('loadedmetadata', function () {
                     self.btns.currenttime.textContent = Math.floor(this.currentTime / 60) + ':' + Math.floor(this.currentTime % 60);
                     self.btns.duration.textContent = Math.floor(this.duration / 60) + ':' + Math.floor(this.duration % 60);
                     this.volume = 0.6;
                 });
 
                 this.media.addEventListener('timeupdate', function () {
-                    var buffered = this.buffered.end(0);
+                    var buffered = this.buffered.end(this.buffered.length - 1);
                     self.btns.progressBuffer.style.left = buffered / this.duration * 100 + '%';
                     self.btns.progressPoint.style.left = this.currentTime / this.duration * 100 + '%';
                     self.btns.progressPlayed.style.left = this.currentTime / this.duration * 100 + '%';
                     self.btns.currenttime.textContent = Math.floor(this.currentTime / 60) + ':' + Math.floor(this.currentTime % 60);
+                });
+
+                this.media.addEventListener('click', function () {
+                    self.togglePlay(this.paused);
+                });
+
+                this.media.addEventListener('seeking', function () {
+                    self.wrap.appendChild(loading);
+                });
+
+                this.media.addEventListener('seeked', function () {
+                    self.wrap.removeChild(loading);
                 });
 
                 this.media.addEventListener('ended', function () {
