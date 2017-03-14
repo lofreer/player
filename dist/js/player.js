@@ -169,6 +169,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
     }
 
+    function timeCount(number) {
+        var hour = Math.floor(number / 3600);
+        var minute = Math.floor(number / 60 - hour * 60);
+        var second = Math.round(number % 60);
+        var str = '';
+        if (hour > 0 && hour < 10) hour = '0' + hour;
+        if (minute.toString().length === 1) minute = '0' + minute;
+        if (second.toString().length === 1) second = '0' + second;
+        hour && (str += hour + ':');
+        str += minute + ':';
+        str += '' + second;
+        return str;
+    }
+
     var Player = function () {
         function Player(element, options) {
             _classCallCheck(this, Player);
@@ -187,7 +201,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.media.parentNode.appendChild(this.wrap);
             this.wrap.appendChild(this.media);
             this.loading = loading;
-            // this.wrap.appendChild(this.loading = loading);
 
             this.buildControl();
             this.initEvents();
@@ -480,9 +493,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var self = this;
 
                 this.media.addEventListener('loadedmetadata', function () {
-                    self.btns.currenttime.textContent = Math.floor(this.currentTime / 60) + ':' + Math.floor(this.currentTime % 60);
-                    self.btns.duration.textContent = Math.floor(this.duration / 60) + ':' + Math.floor(this.duration % 60);
+                    self.btns.currenttime.textContent = timeCount(this.currentTime);
+                    self.btns.duration.textContent = timeCount(this.duration);
                     this.volume = 0.6;
+
+                    timeCount(this.duration);
                 });
 
                 this.media.addEventListener('timeupdate', function () {
@@ -490,7 +505,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     self.btns.progressBuffer.style.left = buffered / this.duration * 100 + '%';
                     self.btns.progressPoint.style.left = this.currentTime / this.duration * 100 + '%';
                     self.btns.progressPlayed.style.left = this.currentTime / this.duration * 100 + '%';
-                    self.btns.currenttime.textContent = Math.floor(this.currentTime / 60) + ':' + Math.floor(this.currentTime % 60);
+                    self.btns.currenttime.textContent = timeCount(this.currentTime);
                 });
 
                 this.media.addEventListener('click', function () {

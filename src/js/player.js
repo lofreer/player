@@ -145,6 +145,20 @@
         }
     }
 
+    function timeCount(number) {
+        let hour = Math.floor(number/3600);
+        let minute = Math.floor(number/60 - hour*60);
+        let second = Math.round(number%60);
+        let str = '';
+        if (hour > 0 && hour < 10) hour = `0${hour}`;
+        if (minute.toString().length === 1) minute = `0${minute}`;
+        if (second.toString().length === 1) second = `0${second}`;
+        hour && (str += `${hour}:`);
+        str += `${minute}:`;
+        str += `${second}`;
+        return str;
+    }
+
 
 
     class Player {
@@ -164,7 +178,6 @@
             this.media.parentNode.appendChild(this.wrap); 
             this.wrap.appendChild(this.media);
             this.loading = loading;
-            // this.wrap.appendChild(this.loading = loading);
 
             this.buildControl();
             this.initEvents();
@@ -449,9 +462,11 @@
             let self = this;
 
             this.media.addEventListener('loadedmetadata', function(){
-                self.btns.currenttime.textContent = Math.floor(this.currentTime/60) + ':' + Math.floor(this.currentTime%60);
-                self.btns.duration.textContent = Math.floor(this.duration/60) + ':' + Math.floor(this.duration%60);
+                self.btns.currenttime.textContent = timeCount(this.currentTime);
+                self.btns.duration.textContent = timeCount(this.duration);
                 this.volume = 0.6;
+
+                timeCount(this.duration)
             });
 
             this.media.addEventListener('timeupdate', function(){
@@ -459,7 +474,7 @@
                 self.btns.progressBuffer.style.left = buffered/this.duration*100 + '%';
                 self.btns.progressPoint.style.left = this.currentTime/this.duration*100 + '%';
                 self.btns.progressPlayed.style.left = this.currentTime/this.duration*100 + '%'; 
-                self.btns.currenttime.textContent = Math.floor(this.currentTime/60) + ':' + Math.floor(this.currentTime%60);
+                self.btns.currenttime.textContent = timeCount(this.currentTime);
             });
 
             this.media.addEventListener('click', function(){
