@@ -15,21 +15,21 @@
     -moz-osx-font-smoothing: grayscale;
 }        
 
-.icon-play:before { content: "\e651"; }
+.picon-play:before { content: "\e651"; }
 
-.icon-pause:before { content: "\e639"; }
+.picon-pause:before { content: "\e639"; }
 
-.icon-voice:before { content: "\e605"; }
+.picon-voice:before { content: "\e605"; }
 
-.icon-mute:before { content: "\e629"; }
+.picon-mute:before { content: "\e629"; }
 
-.icon-zoomin:before { content: "\e6f5"; }
+.picon-zoomin:before { content: "\e6f5"; }
 
-.icon-zoomout:before { content: "\e664"; }
+.picon-zoomout:before { content: "\e664"; }
 
-.icon-set:before { content: "\e64d"; }
+.picon-set:before { content: "\e64d"; }
 
-.icon-close:before { content: "\e79a"; }
+.picon-close:before { content: "\e79a"; }
 
 .play-wrap {
     position: relative;
@@ -47,12 +47,11 @@
 
 .play-control {
     position: absolute;
-    z-index: 2147483648;
     left: 0; right: 0;
     bottom: 0;
     display: flex;
     justify-content: flex-end;
-    height: 30px;
+    height: 40px;
     line-height: 1;
     align-items: center;
     color: #a0a0a0;
@@ -234,7 +233,11 @@ video::-webkit-media-controls-enclosure {
     transform: translate(-50%, -40%);
     width: 50px; 
     height: 50px; 
+    display: none;
 } 
+.play-loading.show {
+    display: block;
+}
 .play-loading span{ 
     display: inline-block; 
     width: 10px;     

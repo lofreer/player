@@ -64,17 +64,17 @@
             let node = document.createElement(this.tagName),
                 props = this.props,
                 children = this.children;
-            
-            utils.each(props, function(value, key){
+
+            for( var key in props) {
                 if (/^on[A-Za-z]/.test(key)) {
                     var eventType = key.toLowerCase().replace('on', '');
-                    self.addListener(node, eventType, value);
+                    self.addListener(node, eventType, props[key]);
                 } else {
-                    node.setAttribute(key, value);
+                    node.setAttribute(key, props[key]);
                 }
-            }); 
+            }            
             children.forEach(function(child) {
-                if (utils.isArray(child)) {
+                if (Array.isArray(child)) {
                     child.forEach(function(item){
                         item && (item instanceof HTMLElement ? node.appendChild(item) : node.insertAdjacentHTML('beforeend', item));
                     })
@@ -116,15 +116,16 @@
     let defaults = {
         source: '',
         poster: '',
-        mute: true,
+        muted: false,
         height: '',
         width: '',
-        autoplay: true
+        autoplay: false
     }
     let loading = ce('div', {class: 'play-loading'}, [0,0,0,0,0,0,0,0].map(function(item){
         return ce('span');
     }));
 
+    // 全屏
     function launchFullScreen(element) {  
         if(element.requestFullScreen) {  
             element.requestFullScreen();  
@@ -135,6 +136,7 @@
         }  
     }  
 
+    // 退出全屏
     function exitFullscreen(element) {
         if(document.exitFullscreen) {
             document.exitFullscreen();
@@ -169,15 +171,18 @@
             element = document.getElementById(element);
             defaults.width = element.getAttribute('width') || defaults.width;
             defaults.height = element.getAttribute('height') || defaults.height;
+            defaults.autoplay = element.hasAttribute('autoplay');
+            defaults.muted = element.hasAttribute('muted');
 
             utils.extend(defaults, options);
             this.media = element;
             this.media.removeAttribute('controls');
+            this.media.removeAttribute('muted');
 
             this.wrap = ce('div', {class: 'play-wrap', style: `width: ${defaults.width}px; height: ${defaults.height}px;`});
             this.media.parentNode.appendChild(this.wrap); 
             this.wrap.appendChild(this.media);
-            this.loading = loading;
+            this.wrap.appendChild(this.loading = loading);
 
             this.buildControl();
             this.initEvents();
@@ -202,8 +207,8 @@
             return {
                 // 播放按钮
                 play: ce('div', {class: 'play-btn control-btn'}, [
-                    self.btns.play = ce('i', {class: 'picon icon-play', onClick: function(){
-                        self.togglePlay(!this.classList.contains('icon-pause'))
+                    self.btns.play = ce('i', {class: 'picon picon-play', onClick: function(){
+                        self.togglePlay(!this.classList.contains('picon-pause'))
                     }})
                 ]),
                 // 时间显示
@@ -217,18 +222,18 @@
                 // 音量控制
                 voice: ce('div', {class: 'voice-control'}, [
                     ce('div', {class: 'mute-btn control-btn'}, [
-                        self.btns.voice = ce('i', {class: 'picon icon-voice',
+                        self.btns.voice = ce('i', {class: 'picon picon-voice',
                             onClick: function(ev) {
-                                if (this.classList.contains('icon-mute')) {
+                                if (this.classList.contains('picon-mute')) {
                                     self.volume(0.6);
                                     self.btns.voiceVed.style.left = '60%';
                                     self.btns.voicePoint.style.left = '60%';
-                                    this.classList.remove('icon-mute');
+                                    this.classList.remove('picon-mute');
                                 } else {
                                     self.volume(0);
                                     self.btns.voiceVed.style.left = 0;
                                     self.btns.voicePoint.style.left = 0;
-                                    this.classList.add('icon-mute');
+                                    this.classList.add('picon-mute');
                                 }
                             }
                         })
@@ -289,13 +294,13 @@
                 ]),
                 // 全屏
                 fullscreen: ce('div', {class: 'zoomin-btn control-btn'}, [
-                    self.btns.fullscreen = ce('i', {class: 'picon icon-zoomin',
+                    self.btns.fullscreen = ce('i', {class: 'picon picon-zoomin',
                         onClick: function(ev) {
-                            if (this.classList.contains('icon-zoomout')) {
-                                this.classList.remove('icon-zoomout');
+                            if (this.classList.contains('picon-zoomout')) {
+                                this.classList.remove('picon-zoomout');
                                 exitFullscreen(self.wrap)
                             } else {
-                                this.classList.add('icon-zoomout');                
+                                this.classList.add('picon-zoomout');                
                                 launchFullScreen(self.wrap)
                             }
                         }
@@ -324,7 +329,7 @@
                         self.btns.progressTips.style.left = left + '%'; 
 
                         let currentTime = left/100 * self.media.duration;
-                        self.btns.progressTips.textContent = Math.floor(currentTime/60) + ':' + Math.floor(currentTime%60);
+                        self.btns.progressTips.textContent = timeCount(currentTime);
                         if (mousedown && left <= 100 && left >= 0) {
                             self.btns.progressPoint.style.left = left + '%';
                             self.btns.progressPlayed.style.left = left + '%';  
@@ -413,18 +418,16 @@
         play() {
             if ('play' in this.media) {
                 this.media.play();
-                this.btns.play.classList.add('icon-pause');
+                this.btns.play.classList.add('picon-pause');
             }
-            this.emit('play');
         }
 
         // 暂停
         pause() {
             if ('pause' in this.media) {
                 this.media.pause();
-                this.btns.play.classList.remove('icon-pause');
+                this.btns.play.classList.remove('picon-pause');
             }
-            this.emit('pause');
         }
 
         // 播放／暂停
@@ -436,6 +439,7 @@
         // 跳跃
         seek(value) {
             this.media.currentTime = value;
+            this.btns.currenttime.textContent = timeCount(value);
         }
         
         // 音量
@@ -446,9 +450,9 @@
         // 静音
         mute(toggle) {
             if (toggle) {
-                this.btns.voice.classList.add('icon-mute');
+                this.btns.voice.classList.add('picon-mute');
             } else {
-                this.btns.voice.classList.remove('icon-mute');
+                this.btns.voice.classList.remove('picon-mute');
             }
         }
 
@@ -461,17 +465,38 @@
         initEvents() {
             let self = this;
 
-            this.media.addEventListener('loadedmetadata', function(){
+            this.media.addEventListener('loadeddata', function(){
                 self.btns.currenttime.textContent = timeCount(this.currentTime);
                 self.btns.duration.textContent = timeCount(this.duration);
                 this.volume = 0.6;
+                
+                if (defaults.autoplay) {
+                    self.play();
+                }
+                if (defaults.muted) {
+                    self.media.muted = false;
+                    self.mute(true);
+                    self.volume(0);
+                    self.btns.voicePoint.style.left = '0%'; 
+                    self.btns.voiceVed.style.left = '0%';
+                }
+            });
 
-                timeCount(this.duration)
+            this.media.addEventListener('play', function(){
+                self.emit('play');
+            });
+
+            this.media.addEventListener('pause', function(){
+                self.loading.classList.remove('show');
+                self.emit('pause');
             });
 
             this.media.addEventListener('timeupdate', function(){
-                var buffered = this.buffered.end(this.buffered.length - 1);
-                self.btns.progressBuffer.style.left = buffered/this.duration*100 + '%';
+                let length = this.buffered.length;
+                if (length > 0) {
+                    let buffered = this.buffered.end( length - 1 );
+                    self.btns.progressBuffer.style.left = buffered/this.duration*100 + '%';
+                }    
                 self.btns.progressPoint.style.left = this.currentTime/this.duration*100 + '%';
                 self.btns.progressPlayed.style.left = this.currentTime/this.duration*100 + '%'; 
                 self.btns.currenttime.textContent = timeCount(this.currentTime);
@@ -479,18 +504,44 @@
 
             this.media.addEventListener('click', function(){
                 self.togglePlay(this.paused);
+                self.emit('click');
             });
 
             this.media.addEventListener('seeking', function(){
-                self.wrap.appendChild(loading);
+                self.loading.classList.add('show');
+                self.emit('seeking');
             });
 
             this.media.addEventListener('seeked', function(){
-                self.wrap.removeChild(loading);
+                self.loading.classList.remove('show');
+                self.emit('seeked');
             });
 
             this.media.addEventListener('ended', function(){
                 self.pause();
+                self.emit('ended');
+            });
+
+            this.media.addEventListener('waiting', function(){
+                self.loading.classList.add('show');
+                self.emit('waiting');
+            });
+
+            this.media.addEventListener('playing', function(){
+                self.loading.classList.remove('show');
+                self.emit('playing');
+            });
+
+            this.media.addEventListener('canplaythrough', function(){
+                if (this.paused) self.loading.classList.remove('show');
+            });
+
+            this.media.addEventListener('progress', function(){
+                let length = this.buffered.length;
+                if (length > 0) {
+                    let buffered = this.buffered.end( length - 1 );
+                    self.btns.progressBuffer.style.left = buffered/this.duration*100 + '%';
+                }                
             });
 
             document.addEventListener('webkitfullscreenchange', function(ev){

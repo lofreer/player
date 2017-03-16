@@ -47,23 +47,38 @@
 
 .play-control {
     position: absolute;
-    z-index: 2147483648;
     left: 0; right: 0;
     bottom: 0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
-    justify-content: flex-end;
-    height: 30px;
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+    height: 40px;
     line-height: 1;
-    align-items: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
     color: #a0a0a0;
     background: #242424;
     padding: 5px 5px 0;
+    -webkit-transition: all .3s;
     transition: all .3s;
     opacity: 0;
-    user-select: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 .control-space {
-    flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
 }
 .play-progress {
     position: absolute;
@@ -82,7 +97,9 @@
 .progress-buffer {
     position: absolute;
     left: 0; top: 0;
-    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+        -ms-transform: translateX(-100%);
+            transform: translateX(-100%);
     width: 100%;
     height: 100%;
     background: #ccc;
@@ -90,7 +107,9 @@
 .progress-played {
     position: absolute;
     left: 0; top: 0;
-    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+        -ms-transform: translateX(-100%);
+            transform: translateX(-100%);
     width: 100%;
     height: 100%;
     background: #fa8f03;
@@ -98,7 +117,9 @@
 .progress-point {
     position: absolute;
     left: 0; top: 0;
-    transform: translate(-50%, -25%);
+    -webkit-transform: translate(-50%, -25%);
+        -ms-transform: translate(-50%, -25%);
+            transform: translate(-50%, -25%);
     width: 10px;
     height: 10px;
     background: #fff;
@@ -108,7 +129,9 @@
 .progress-tips {
     position: absolute;
     left: 0; bottom: 100%;
-    transform: translate(-50%, -35%);
+    -webkit-transform: translate(-50%, -35%);
+        -ms-transform: translate(-50%, -35%);
+            transform: translate(-50%, -35%);
     font-size: 12px;
     color: #fff;
     background: rgba(0,0,0,.8);
@@ -119,7 +142,9 @@
 .progress-tips::after {
     position: absolute;
     top: 100%; left: 50%;
-    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+        -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
     content: '';
     border-width: 4px 4px 0px 4px;
     border-style: solid;
@@ -134,8 +159,14 @@
     font-size: 12px;
 }
 .voice-control {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
-    align-items: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
     margin-right: 20px;
 }
 .voice-progress {
@@ -155,7 +186,9 @@
 .voice-progress-ved {
     position: absolute;
     left: 60%; top: 0;
-    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+        -ms-transform: translateX(-100%);
+            transform: translateX(-100%);
     width: 100%;
     height: 100%;
     background: #fa8f03;
@@ -163,7 +196,9 @@
 .voice-progress-point {
     position: absolute;
     left: 60%; top: 0;
-    transform: translate(-50%, -25%);
+    -webkit-transform: translate(-50%, -25%);
+        -ms-transform: translate(-50%, -25%);
+            transform: translate(-50%, -25%);
     width: 10px;
     height: 10px;
     background: #fff;
@@ -189,7 +224,9 @@
     position: absolute;
     z-index: 99;
     left: 50%; bottom: 0;
-    transform: translate(-50%, -10%);
+    -webkit-transform: translate(-50%, -10%);
+        -ms-transform: translate(-50%, -10%);
+            transform: translate(-50%, -10%);
     padding-bottom: 15px;
     display: none;
 }
@@ -231,10 +268,16 @@ video::-webkit-media-controls-enclosure {
 .play-loading { 
     position: absolute;
     left: 50%; top: 50%;
-    transform: translate(-50%, -40%);
+    -webkit-transform: translate(-50%, -40%);
+        -ms-transform: translate(-50%, -40%);
+            transform: translate(-50%, -40%);
     width: 50px; 
     height: 50px; 
+    display: none;
 } 
+.play-loading.show {
+    display: block;
+}
 .play-loading span{ 
     display: inline-block; 
     width: 10px;     
