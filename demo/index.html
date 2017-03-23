@@ -15,14 +15,19 @@
     </style>
 </head>
 <body>
-    <div class="wrap">
-        <video id="video" src="video.mp4" poster="video.png" controls autoplay></video>
+    <div id="wrap" class="wrap">
+        <video id="video" src="video.mp4" poster="video.png" controls muted></video>
     </div>
     
 
     <script src="../dist/js/player.js"></script>
     <script>
-        var player = Player('video');
+        var player = Player('video', {
+            // source: 'video.mp4',
+            // poster: 'video.png',
+            // autoplay: true,
+            // muted: true
+        });
         player.on('play', function(){
             console.log('play start...')
         });

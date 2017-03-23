@@ -161,26 +161,32 @@
         return str;
     }
 
-
-
     class Player {
 
         constructor(element, options) {
             let self = this;
             this.btns = {};
             element = document.getElementById(element);
-            defaults.width = element.getAttribute('width') || defaults.width;
-            defaults.height = element.getAttribute('height') || defaults.height;
-            defaults.autoplay = element.hasAttribute('autoplay');
-            defaults.muted = element.hasAttribute('muted');
-
             utils.extend(defaults, options);
-            this.media = element;
+            if (element.nodeName == 'VIDEO') {
+                defaults.width = defaults.width || element.getAttribute('width');
+                defaults.height =  defaults.height || element.getAttribute('height');
+                defaults.autoplay = defaults.autoplay || element.hasAttribute('autoplay');
+                defaults.muted = defaults.muted || element.hasAttribute('muted');
+                this.media = element;
+                this.wrap = ce('div', {class: 'play-wrap', style: `width: ${defaults.width}px; height: ${defaults.height}px;`});           
+                this.media.parentNode.appendChild(this.wrap); 
+            } else {
+                this.media = ce('video', {
+                    src: defaults.source,
+                    poster: defaults.poster
+                });
+                this.wrap = element;
+                this.wrap.classList.add('play-wrap');
+            }            
+            
             this.media.removeAttribute('controls');
             this.media.removeAttribute('muted');
-
-            this.wrap = ce('div', {class: 'play-wrap', style: `width: ${defaults.width}px; height: ${defaults.height}px;`});
-            this.media.parentNode.appendChild(this.wrap); 
             this.wrap.appendChild(this.media);
             this.wrap.appendChild(this.loading = loading);
 
