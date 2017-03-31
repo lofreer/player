@@ -41,25 +41,25 @@
     width: 100%;
     height: 100%;
 }
-.play-wrap:hover .play-control {
-    opacity: 1;
-}
 
 .play-control {
     position: absolute;
     left: 0; right: 0;
     bottom: 0;
+    transform: translateY(110%);
     display: flex;
     justify-content: flex-end;
     height: 40px;
     line-height: 1;
     align-items: center;
     color: #a0a0a0;
-    background: #242424;
+    background: rgba(0,0,0,.2);
     padding: 5px 5px 0;
     transition: all .3s;
-    opacity: 0;
     user-select: none;
+}
+.play-control.show {
+    transform: translateY(0);
 }
 .control-space {
     flex: 1;

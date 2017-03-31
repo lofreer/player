@@ -143,7 +143,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         muted: false,
         height: '',
         width: '',
-        autoplay: false
+        autoplay: false,
+        currentTime: 0
     };
     var loading = ce('div', { class: 'play-loading' }, [0, 0, 0, 0, 0, 0, 0, 0].map(function (item) {
         return ce('span');
@@ -198,6 +199,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 defaults.height = defaults.height || element.getAttribute('height');
                 defaults.autoplay = defaults.autoplay || element.hasAttribute('autoplay');
                 defaults.muted = defaults.muted || element.hasAttribute('muted');
+                defaults.currentTime = parseInt(defaults.currentTime) || parseInt(element.getAttribute('currentTime'));
                 this.media = element;
                 this.wrap = ce('div', { class: 'play-wrap', style: 'width: ' + defaults.width + 'px; height: ' + defaults.height + 'px;' });
                 this.media.parentNode.appendChild(this.wrap);
@@ -225,8 +227,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: 'buildControl',
             value: function buildControl() {
                 var controls = this.controls();
-                var control = ce('div', { class: 'play-control' }, [controls.play, controls.time, controls.space, controls.voice, controls.speed, controls.fullscreen, controls.progress]);
-                this.wrap.appendChild(control);
+                this.control = ce('div', { class: 'play-control' }, [controls.play, controls.time, controls.space, controls.voice, controls.speed, controls.fullscreen, controls.progress]);
+                this.wrap.appendChild(this.control);
             }
             // 控制栏相关元素
 
@@ -509,6 +511,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     self.btns.duration.textContent = timeCount(this.duration);
                     this.volume = 0.6;
 
+                    // 跳转到指定位置
+                    self.seek(defaults.currentTime);
+
                     if (defaults.autoplay) {
                         self.play();
                     }
@@ -589,6 +594,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     } else {
                         self.wrap.classList.remove('fullscreen');
                     }
+                });
+
+                // 控制栏显示/隐藏
+                var timer = 0;
+                this.wrap.addEventListener('mousemove', function () {
+                    clearInterval(timer);
+                    self.control.classList.add('show');
+                    timer = setTimeout(function () {
+                        self.control.classList.remove('show');
+                    }, 5000);
+                });
+                this.wrap.addEventListener('mouseleave', function () {
+                    self.control.classList.remove('show');
                 });
             }
         }]);

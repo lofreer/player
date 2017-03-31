@@ -119,7 +119,8 @@
         muted: false,
         height: '',
         width: '',
-        autoplay: false
+        autoplay: false,
+        currentTime: 0
     }
     let loading = ce('div', {class: 'play-loading'}, [0,0,0,0,0,0,0,0].map(function(item){
         return ce('span');
@@ -173,6 +174,7 @@
                 defaults.height =  defaults.height || element.getAttribute('height');
                 defaults.autoplay = defaults.autoplay || element.hasAttribute('autoplay');
                 defaults.muted = defaults.muted || element.hasAttribute('muted');
+                defaults.currentTime = parseInt(defaults.currentTime) || parseInt(element.getAttribute('currentTime'));
                 this.media = element;
                 this.wrap = ce('div', {class: 'play-wrap', style: `width: ${defaults.width}px; height: ${defaults.height}px;`});           
                 this.media.parentNode.appendChild(this.wrap); 
@@ -196,7 +198,7 @@
         // 自定义控制条 动态生成
         buildControl() {
             let controls = this.controls();
-            let control = ce('div', {class: 'play-control'}, [
+            this.control = ce('div', {class: 'play-control'}, [
                 controls.play,
                 controls.time,
                 controls.space,
@@ -205,7 +207,7 @@
                 controls.fullscreen,
                 controls.progress
             ]);
-            this.wrap.appendChild(control);
+            this.wrap.appendChild(this.control);
         }
         // 控制栏相关元素
         controls() {
@@ -475,6 +477,9 @@
                 self.btns.currenttime.textContent = timeCount(this.currentTime);
                 self.btns.duration.textContent = timeCount(this.duration);
                 this.volume = 0.6;
+
+                // 跳转到指定位置
+                self.seek(defaults.currentTime);
                 
                 if (defaults.autoplay) {
                     self.play();
@@ -556,7 +561,20 @@
                 } else {
                     self.wrap.classList.remove('fullscreen');
                 }
-            });            
+            });   
+
+            // 控制栏显示/隐藏
+            let timer = 0;
+            this.wrap.addEventListener('mousemove', function(){
+                clearInterval(timer);
+                self.control.classList.add('show');
+                timer = setTimeout(function(){
+                    self.control.classList.remove('show');
+                }, 5000);
+            });     
+            this.wrap.addEventListener('mouseleave', function(){
+                self.control.classList.remove('show');
+            });         
         }
 
     }    
